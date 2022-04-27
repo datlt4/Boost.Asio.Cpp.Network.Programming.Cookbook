@@ -262,3 +262,6 @@
 - Hãy nhớ rằng **acceptor socket** không tự kết nối với ứng dụng khách trong khi xử lý yêu cầu kết nối. Thay vào đó, nó sẽ mở và kết nối một **active socket** khác, **socket** này sau đó được sử dụng để giao tiếp với ứng dụng khách. **Acceptor socket** chỉ lắng nghe và xử lý (chấp nhận) các yêu cầu kết nối đến.
 
 - Lưu ý rằng máy chủ UDP không sử dụng **acceptor socket** vì giao thức UDP không ngầm thiết lập kết nối. Thay vào đó, một **active socket** được sử dụng được liên kết với một **endpoint** và lắng nghe các thông báo I/O đến và cùng một **active socket** này được sử dụng để giao tiếp.
+
+---
+
