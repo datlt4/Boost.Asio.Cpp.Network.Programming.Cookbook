@@ -2,7 +2,7 @@
 
 ## Chapter 1: [The Basics](chapter-1-the-basics.md)
 
-## Chapter 2: [I/O Operations]()
+## Chapter 2: [I/O Operations](chapter-2-i-o-operations.md)
 
 ## Chapter 3: [Implementing Client Applications]()
 
