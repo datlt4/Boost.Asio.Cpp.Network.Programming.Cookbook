@@ -145,3 +145,7 @@ Công thức này trình bày cách triển khai ứng dụng khách TCP đồng
      - Người dùng có thể đưa ra một yêu cầu mới trước khi các yêu cầu đã phát hành trước đó hoàn tất.
 
      - Người dùng sẽ có thể hủy các yêu cầu đã đưa ra trước đó trước khi chúng hoàn tất.
+
+[**CODE**](asio-example/chapter-3/AsyncTCPClient.cpp)
+
+[**CODE**](asio-example/chapter-3/AsyncTCPClientMT.cpp)
