@@ -217,7 +217,7 @@
 
 ## Accepting connections
 
-- Khi ứng dụng khách muốn giao tiếp với ứng dụng máy chủ qua giao thức TCP, trước tiên nó cần thiết lập một kết nối logic với máy chủ đó. Để làm điều đó, máy khách allocates một **activate socket** và đưa ra lệnh kết nối trên đó (ví dụ: bằng cách gọi phương thức `connect()` trên đối tượng ổ cắm), dẫn đến một thông báo yêu cầu thiết lập kết nối được gửi đến máy chủ.
+- Khi ứng dụng khách muốn giao tiếp với ứng dụng máy chủ qua giao thức TCP, trước tiên nó cần thiết lập một kết nối logic với máy chủ đó. Để làm điều đó, máy khách allocates một **activate socket** và đưa ra lệnh kết nối trên đó (ví dụ: bằng cách gọi phương thức `connect()` trên đối tượng **socket**), dẫn đến một thông báo yêu cầu thiết lập kết nối được gửi đến máy chủ.
 
 - Về phía máy chủ, một số sắp xếp phải được thực hiện trước khi ứng dụng máy chủ có thể chấp nhận và xử lý các yêu cầu kết nối đến từ máy khách. Trước đó, tất cả các yêu cầu kết nối được nhắm mục tiêu vào ứng dụng máy chủ này đều bị hệ điều hành từ chối.
 
@@ -237,11 +237,11 @@
     
     - Ràng buộc **acceptor socket** với **endpoint** máy chủ được tạo ở bước 2.
     
-    - Gọi phương thức `listen()` của ổ cắm chấp nhận để làm cho nó bắt đầu lắng nghe các yêu cầu kết nối đến trên **endpoint**.
+    - Gọi phương thức `listen()` của **socket** chấp nhận để làm cho nó bắt đầu lắng nghe các yêu cầu kết nối đến trên **endpoint**.
     
     - Khởi tạo một đối tượng **active socket**.
     
-    - Khi đã sẵn sàng để xử lý một yêu cầu kết nối, hãy gọi phương thức `accept()` của ổ cắm chấp nhận chuyển đối tượng **active socket** được tạo ở bước 6 làm đối số.
+    - Khi đã sẵn sàng để xử lý một yêu cầu kết nối, hãy gọi phương thức `accept()` của **socket** chấp nhận chuyển đối tượng **active socket** được tạo ở bước 6 làm đối số.
     
     - Nếu hàm thành công, **active socket** được kết nối với ứng dụng khách và sẵn sàng được sử dụng để giao tiếp với nó.
 
