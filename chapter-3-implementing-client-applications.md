@@ -88,11 +88,11 @@ EMULATE_LONG_COMP_OP [s]<LF>
 
     - Sử dụng các hoạt động I/O và điều khiển (ít nhất là các hoạt động I / O liên quan đến giao tiếp với máy chủ) để chặn luồng thực thi cho đến khi hoạt động tương ứng hoàn thành hoặc xảy ra lỗi.
 
-Một ứng dụng khách TCP đồng bộ điển hình hoạt động theo thuật toán sau:
+- Một ứng dụng khách TCP đồng bộ điển hình hoạt động theo thuật toán sau:
 
     - Lấy địa chỉ IP và số cổng giao thức của ứng dụng máy chủ.
 
-    - Allocate một ổ cắm hoạt động.
+    - Allocate một **socket** hoạt động.
 
     - Thiết lập kết nối với ứng dụng máy chủ.
 
@@ -100,6 +100,48 @@ Một ứng dụng khách TCP đồng bộ điển hình hoạt động theo thu
 
     - Ngắt kết nối.
 
-    - Deallocate ổ cắm.
+    - Deallocate **socket**.
 
 Công thức này trình bày cách triển khai ứng dụng khách TCP đồng bộ với Boost.Asio.
+
+[**CODE**](asio-example/chapter-3/SyncTCPClient.cpp) - code mẫu triển khai ứng dụng khách TCP đồng bộ với `Boost.Asio`.
+
+---
+
+## Implementing a synchronous UDP client
+
+- Máy khách UDP đồng bộ là một phần của ứng dụng phân tán tuân thủ các câu lệnh sau:
+
+    - Hoạt động như một máy khách trong mô hình giao tiếp máy khách-máy chủ
+
+    - Giao tiếp với ứng dụng máy chủ bằng giao thức UDP
+
+    - Sử dụng các hoạt động I / O và điều khiển (ít nhất là các hoạt động I / O liên quan đến giao tiếp với máy chủ) chặn luồng thực thi cho đến khi hoạt động tương ứng hoàn thành hoặc xảy ra lỗi
+
+- Một máy khách UDP đồng bộ điển hình hoạt động theo thuật toán sau:
+
+    - Lấy địa chỉ IP và số cổng giao thức của mỗi máy chủ mà ứng dụng khách dự định giao tiếp.
+
+    - Allocate một **socket** UDP.
+
+    - Trao đổi tin nhắn với các máy chủ.
+
+    - Deallocate **socket**.
+
+[**CODE**](asio-example/chapter-3/SyncUDPClient.cpp) - code mẫu cách triển khai ứng dụng khách UDP đồng bộ với Boost.Asio.
+
+---
+
+## Implementing an asynchronous TCP client
+
+- Như nó đã được đề cập trong phần giới thiệu của chương này, máy khách không đồng bộ đơn giản nhất có cấu trúc phức tạp hơn máy khách đồng bộ tương đương. Khi chúng tôi thêm một tính năng như hủy yêu cầu vào máy khách không đồng bộ, nó thậm chí còn trở nên phức tạp hơn.
+
+- Trong công thức này, chúng ta sẽ xem xét một ứng dụng khách TCP không đồng bộ hỗ trợ thực thi không đồng bộ các yêu cầu và chức năng hủy yêu cầu. Dưới đây là danh sách các yêu cầu mà ứng dụng sẽ đáp ứng:
+
+     - Đầu vào từ người dùng phải được xử lý trong một chuỗi riêng biệt - chuỗi giao diện người dùng. Chủ đề này sẽ không bao giờ bị chặn trong một khoảng thời gian đáng chú ý.
+
+     - Người dùng có thể đưa ra nhiều yêu cầu đến các máy chủ khác nhau.
+
+     - Người dùng có thể đưa ra một yêu cầu mới trước khi các yêu cầu đã phát hành trước đó hoàn tất.
+
+     - Người dùng sẽ có thể hủy các yêu cầu đã đưa ra trước đó trước khi chúng hoàn tất.
