@@ -189,6 +189,7 @@ private:
         session->m_callback(session->m_id, session->m_response, ec);
     };
 
+private:
     boost::asio::io_service m_ios;
     std::map<int, std::shared_ptr<Session>> m_active_sessions;
     std::mutex m_active_sessions_guard;
