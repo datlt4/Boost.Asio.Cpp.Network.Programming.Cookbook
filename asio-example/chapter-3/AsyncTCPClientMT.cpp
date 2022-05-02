@@ -22,36 +22,34 @@
 #include <mutex>
 #include <thread>
 
-using namespace boost;
-
 // Function pointer type that points to the callback
 // function which is called when a request is complete.
 typedef void (*Callback)(unsigned int request_id, const std::string &response,
-                         const system::error_code &ec);
+                         const boost::system::error_code &ec);
 
 // Structure represents a context of a single request.
 struct Session {
-    Session(asio::io_service &ios, const std::string &raw_ip_address,
+    Session(boost::asio::io_service &ios, const std::string &raw_ip_address,
             unsigned short port_num, const std::string &request,
             unsigned int id, Callback callback)
         : m_sock(ios),
-          m_ep(asio::ip::address::from_string(raw_ip_address), port_num),
+          m_ep(boost::asio::ip::address::from_string(raw_ip_address), port_num),
           m_request(request),
           m_id(id),
           m_callback(callback),
           m_was_cancelled(false) {}
 
-    asio::ip::tcp::socket m_sock;  // Socket used for communication
-    asio::ip::tcp::endpoint m_ep;  // Remote endpoint.
+    boost::asio::ip::tcp::socket m_sock;  // Socket used for communication
+    boost::asio::ip::tcp::endpoint m_ep;  // Remote endpoint.
     std::string m_request;         // Request string.
 
     // streambuf where the response will be stored.
-    asio::streambuf m_response_buf;
+    boost::asio::streambuf m_response_buf;
     std::string m_response;  // Response represented as a string.
 
     // Contains the description of an error if one occurs during
     // the request lifecycle.
-    system::error_code m_ec;
+    boost::system::error_code m_ec;
     unsigned int m_id;  // Unique ID assigned to the request.
 
     // Pointer to the function to be called when the request
@@ -96,7 +94,7 @@ class AsyncTCPClient : public boost::noncopyable {
         lock.unlock();
 
         session->m_sock.async_connect(
-            session->m_ep, [this, session](const system::error_code &ec) {
+            session->m_ep, [this, session](const boost::system::error_code &ec) {
                 if (ec != 0) {
                     session->m_ec = ec;
                     onRequestComplete(session);
@@ -111,8 +109,8 @@ class AsyncTCPClient : public boost::noncopyable {
                     return;
                 }
 
-                asio::async_write(
-                    session->m_sock, asio::buffer(session->m_request),
+                boost::asio::async_write(
+                    session->m_sock, boost::asio::buffer(session->m_request),
                     [this, session](const boost::system::error_code &ec,
                                     std::size_t bytes_transferred) {
                         if (ec != 0) {
@@ -129,7 +127,7 @@ class AsyncTCPClient : public boost::noncopyable {
                             return;
                         }
 
-                        asio::async_read_until(
+                        boost::asio::async_read_until(
                             session->m_sock, session->m_response_buf, '\n',
                             [this, session](const boost::system::error_code &ec,
                                             std::size_t bytes_transferred) {
@@ -177,7 +175,7 @@ class AsyncTCPClient : public boost::noncopyable {
         // about the error code if this function fails.
         boost::system::error_code ignored_ec;
 
-        session->m_sock.shutdown(asio::ip::tcp::socket::shutdown_both,
+        session->m_sock.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
                                  ignored_ec);
 
         // Remove session form the map of active sessions.
@@ -190,7 +188,7 @@ class AsyncTCPClient : public boost::noncopyable {
         boost::system::error_code ec;
 
         if (session->m_ec == 0 && session->m_was_cancelled)
-            ec = asio::error::operation_aborted;
+            ec = boost::asio::error::operation_aborted;
         else
             ec = session->m_ec;
 
@@ -199,7 +197,7 @@ class AsyncTCPClient : public boost::noncopyable {
     };
 
    private:
-    asio::io_service m_ios;
+    boost::asio::io_service m_ios;
     std::map<int, std::shared_ptr<Session>> m_active_sessions;
     std::mutex m_active_sessions_guard;
     std::unique_ptr<boost::asio::io_service::work> m_work;
@@ -207,11 +205,11 @@ class AsyncTCPClient : public boost::noncopyable {
 };
 
 void handler(unsigned int request_id, const std::string &response,
-             const system::error_code &ec) {
+             const boost::system::error_code &ec) {
     if (ec == 0) {
         std::cout << "Request #" << request_id
                   << " has completed. Response: " << response << std::endl;
-    } else if (ec == asio::error::operation_aborted) {
+    } else if (ec == boost::asio::error::operation_aborted) {
         std::cout << "Request #" << request_id
                   << " has been cancelled by the user." << std::endl;
     } else {
