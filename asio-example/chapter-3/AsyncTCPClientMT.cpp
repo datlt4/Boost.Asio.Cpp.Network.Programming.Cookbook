@@ -21,6 +21,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <map>
 
 // Function pointer type that points to the callback
 // function which is called when a request is complete.
@@ -60,7 +61,7 @@ struct Session {
 };
 
 class AsyncTCPClient : public boost::noncopyable {
-   public:
+public:
     AsyncTCPClient(unsigned char num_of_threads) {
         m_work.reset(new boost::asio::io_service::work(m_ios));
         for (unsigned char i = 1; i <= num_of_threads; i++) {
@@ -95,7 +96,7 @@ class AsyncTCPClient : public boost::noncopyable {
 
         session->m_sock.async_connect(
             session->m_ep, [this, session](const boost::system::error_code &ec) {
-                if (ec != 0) {
+                if (ec.value() != 0) {
                     session->m_ec = ec;
                     onRequestComplete(session);
                     return;
@@ -113,7 +114,7 @@ class AsyncTCPClient : public boost::noncopyable {
                     session->m_sock, boost::asio::buffer(session->m_request),
                     [this, session](const boost::system::error_code &ec,
                                     std::size_t bytes_transferred) {
-                        if (ec != 0) {
+                        if (ec.value() != 0) {
                             session->m_ec = ec;
                             onRequestComplete(session);
                             return;
@@ -131,7 +132,7 @@ class AsyncTCPClient : public boost::noncopyable {
                             session->m_sock, session->m_response_buf, '\n',
                             [this, session](const boost::system::error_code &ec,
                                             std::size_t bytes_transferred) {
-                                if (ec != 0) {
+                                if (ec.value() != 0) {
                                     session->m_ec = ec;
                                 } else {
                                     std::istream strm(&session->m_response_buf);
@@ -168,7 +169,7 @@ class AsyncTCPClient : public boost::noncopyable {
         }
     }
 
-   private:
+private:
     void onRequestComplete(std::shared_ptr<Session> session) {
         // Shutting down the connection. This method may
         // fail in case socket is not connected. We don�t care
@@ -187,7 +188,7 @@ class AsyncTCPClient : public boost::noncopyable {
         lock.unlock();
         boost::system::error_code ec;
 
-        if (session->m_ec == 0 && session->m_was_cancelled)
+        if (session->m_ec.value() == 0 && session->m_was_cancelled)
             ec = boost::asio::error::operation_aborted;
         else
             ec = session->m_ec;
@@ -196,7 +197,7 @@ class AsyncTCPClient : public boost::noncopyable {
         session->m_callback(session->m_id, session->m_response, ec);
     };
 
-   private:
+private:
     boost::asio::io_service m_ios;
     std::map<int, std::shared_ptr<Session>> m_active_sessions;
     std::mutex m_active_sessions_guard;
@@ -206,7 +207,7 @@ class AsyncTCPClient : public boost::noncopyable {
 
 void handler(unsigned int request_id, const std::string &response,
              const boost::system::error_code &ec) {
-    if (ec == 0) {
+    if (ec.value() == 0) {
         std::cout << "Request #" << request_id
                   << " has completed. Response: " << response << std::endl;
     } else if (ec == boost::asio::error::operation_aborted) {
@@ -241,7 +242,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::seconds(15));
         // Decides to exit the application.
         client.close();
-    } catch (system::system_error &e) {
+    } catch (boost::system::system_error &e) {
         std::cout << "Error occured! Error code = " << e.code()
                   << ". Message: " << e.what();
 
