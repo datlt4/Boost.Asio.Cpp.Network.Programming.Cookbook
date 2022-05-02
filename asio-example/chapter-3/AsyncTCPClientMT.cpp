@@ -15,6 +15,7 @@
 #endif
 
 #include <boost/asio.hpp>
+#include <boost/noncopyable.hpp>
 #include <iostream>
 #include <list>
 #include <memory>
