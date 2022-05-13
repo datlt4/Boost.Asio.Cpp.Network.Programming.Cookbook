@@ -5,7 +5,7 @@ int main()
 {
 	// Step 1. Here we assume that the server application has
 	// already obtained the protocol port number.
-	unsigned short port_num = 3333;
+	unsigned short port_num = 8000;
 
 	// Step 2. Creating an endpoint.
 	boost::asio::ip::udp::endpoint ep(boost::asio::ip::address_v4::any(), port_num);

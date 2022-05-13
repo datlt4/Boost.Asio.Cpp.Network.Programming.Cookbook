@@ -32,7 +32,7 @@ void processRequest(asio::ip::tcp::socket& sock) {
 
 int main()
 {
-	unsigned short port_num = 3333;
+	unsigned short port_num = 8000;
 	
 	try {
 		asio::ip::tcp::endpoint ep(asio::ip::address_v4::any(),

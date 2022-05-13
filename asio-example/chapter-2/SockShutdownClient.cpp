@@ -36,7 +36,7 @@ void communicate(asio::ip::tcp::socket& sock) {
 int main()
 {
 	std::string raw_ip_address = "127.0.0.1";
-	unsigned short port_num = 3333;
+	unsigned short port_num = 8000;
 
 	try {
 		asio::ip::tcp::endpoint
